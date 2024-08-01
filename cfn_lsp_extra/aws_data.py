@@ -165,10 +165,20 @@ class AWSContext:
         else:
             return True
 
+    def __enrich_description(self, name: AWSName) -> str:
+        """Add the documentation URL link to description"""
+        description = self[name].get(AWSSpecification.MARKDOWN_DOCUMENTATION, "")  # type: ignore[no-any-return]
+        url = self[name].get(AWSSpecification.DOCUMENTATION, "")  # type: ignore[no-any-return]
+
+        # Add URL as link to the top of the description
+        description = url + "\n\n" + description
+
+        return description
+
     def description(self, name: AWSName) -> str:
         """Get the description of obj."""
         # Be a bit forgiving here a la SAM specification
-        return self[name].get(AWSSpecification.MARKDOWN_DOCUMENTATION, "")  # type: ignore[no-any-return]
+        return self.__enrich_description(name)
 
     def return_values(self, resource: AWSResourceName) -> Dict[str, str]:
         dcts = self[resource].get(AWSSpecification.ATTRIBUTES, {})
