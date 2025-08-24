@@ -168,7 +168,12 @@ class AWSContext:
     def description(self, name: AWSName) -> str:
         """Get the description of obj."""
         # Be a bit forgiving here a la SAM specification
-        return self[name].get(AWSSpecification.MARKDOWN_DOCUMENTATION, "")  # type: ignore[no-any-return]
+        # Also prefix the documentation URL so that I can jump to the documentation
+        return (
+            self[name].get(AWSSpecification.DOCUMENTATION, "")
+            + "\n\n"
+            + self[name].get(AWSSpecification.MARKDOWN_DOCUMENTATION, "")
+        )  # type: ignore[no-any-return]
 
     def return_values(self, resource: AWSResourceName) -> Dict[str, str]:
         dcts = self[resource].get(AWSSpecification.ATTRIBUTES, {})
